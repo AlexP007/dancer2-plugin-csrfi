@@ -112,12 +112,12 @@ sub validate_csrf {
 
 sub page_entropy {
     my ($self) = @_;
-    return $self->entropy($self->request->base . $self->request->path);
+    return $self->entropy($self->app->request->base . $self->app->request->path);
 }
 
 sub referer_entropy {
     my ($self) = @_;
-    return $self->entropy($self->request->referer);
+    return $self->entropy($self->app->request->referer);
 }
 
 sub entropy {
@@ -125,7 +125,7 @@ sub entropy {
     return sprintf(
         '%s:%s',
         $path,
-        $self->request->address
+        $self->app->request->address
     );
 }
 
