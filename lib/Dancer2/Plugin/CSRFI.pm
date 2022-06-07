@@ -11,6 +11,24 @@ our $VERSION = '0.01';
 
 plugin_keywords qw(csrf_token validate_csrf);
 
+has session_key => (
+    is      => 'ro',
+    lazy    => 1,
+    default => sub { $_[0]->config->{session_key} || '_csrf' }
+);
+
+has validate_post => (
+    is      => 'ro',
+    lazy    => 1,
+    default => sub { $_[0]->config->{validate_post} || 0 }
+);
+
+has response_status => (
+    is      => 'ro',
+    lazy    => 1,
+    default => sub { $_[0]->config->{response_status} || 403 }
+);
+
 sub BUILD {
     my ($self) = @_;
 
