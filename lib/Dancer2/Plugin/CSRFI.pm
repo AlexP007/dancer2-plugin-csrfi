@@ -9,7 +9,6 @@ use Dancer2::Core::Hook;
 use List::Util qw(any);
 use Crypt::SaltedHash;
 use Data::UUID;
-use namespace::clean;
 
 our $VERSION = '0.01';
 
@@ -66,10 +65,12 @@ sub BUILD {
         $self->app->add_hook(
             Dancer2::Core::Hook->new(
                 name => 'before',
-                code => sub {$self->hook_before_request_validate_csrf(@_)}
+                code => sub { $self->hook_before_request_validate_csrf(@_) },
             )
         );
     }
+
+    return;
 }
 
 sub csrf_token {
