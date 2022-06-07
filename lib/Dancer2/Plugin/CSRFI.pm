@@ -59,7 +59,7 @@ sub csrf_token {
     my ($self) = @_;
 
     my $unique;
-    my $entropy = $self->hit_entropy;
+    my $entropy = $self->page_entropy;
     my $session = $self->app->session->read($self->session_key);
 
     if (defined $session and $self->once_per_session) {
@@ -85,28 +85,28 @@ sub validate_csrf {
     }
 
     my $unique   = $session->{unique};
-    my $entropy  = $self->hit_entropy;
+    my $entropy  = $self->page_entropy;
     my $expected = $self->generate($unique, $entropy);
 
     return $token eq $expected;
 
 }
 
-sub hit_entropy {
+sub page_entropy {
     my ($self) = @_;
-    return sprintf(
-        '%s%s:%s',
-        $self->request->base,
-        $self->request->path,
-        $self->request->address
-    );
+    return $self->entropy($self->request->base . $self->request->path);
 }
 
 sub referer_entropy {
     my ($self) = @_;
+    return $self->entropy($self->request->referer);
+}
+
+sub entropy {
+    my ($self, $path) = @_;
     return sprintf(
         '%s:%s',
-        $self->request->referer,
+        $path,
         $self->request->address
     );
 }
