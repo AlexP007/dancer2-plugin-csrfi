@@ -6,6 +6,9 @@ use warnings;
 
 use Dancer2::Plugin;
 use Dancer2::Core::Hook;
+use Crypt::SaltedHash;
+use Data::UUID;
+use namespace::clean;
 
 our $VERSION = '0.01';
 
@@ -17,10 +20,22 @@ has session_key => (
     default => sub { $_[0]->config->{session_key} || '_csrf' }
 );
 
+has once_per_session => (
+    is      => 'ro',
+    lazy    => 1,
+    default => sub { $_[0]->config->{once_per_session} || 1 }
+);
+
 has validate_post => (
     is      => 'ro',
     lazy    => 1,
     default => sub { $_[0]->config->{validate_post} || 0 }
+);
+
+has field_name => (
+    is      => 'ro',
+    lazy    => 1,
+    default => sub { $_[0]->config->{field_name} || 'csrf_token' }
 );
 
 has response_status => (
@@ -41,12 +56,74 @@ sub BUILD {
 }
 
 sub csrf_token {
+    my ($self) = @_;
+
+    my $unique;
+    my $entropy = $self->hit_entropy;
+    my $session = $self->app->session->read($self->session_key);
+
+    if (defined $session and $self->once_per_session) {
+        $unique = $session->{unique};
+    }
+    else {
+        $unique = $self->unique;
+    }
+
+    $self->app->session->write($self->session_key => { unique => $unique });
+
+    return $self->generate($unique, $entropy);
 
 }
 
 sub validate_csrf {
+    my ($self, $token) = @_;
+
+    my $session = $self->app->session->read($self->session_key);
+
+    if (not defined $session) {
+        return;
+    }
+
+    my $unique   = $session->{unique};
+    my $entropy  = $self->hit_entropy;
+    my $expected = $self->generate($unique, $entropy);
+
+    return $token eq $expected;
 
 }
+
+sub hit_entropy {
+    my ($self) = @_;
+    return sprintf(
+        '%s%s:%s',
+        $self->request->base,
+        $self->request->path,
+        $self->request->address
+    );
+}
+
+sub referer_entropy {
+    my ($self) = @_;
+    return sprintf(
+        '%s:%s',
+        $self->request->referer,
+        $self->request->address
+    );
+}
+
+sub unique {
+    return Data::UUID->new->create_str;
+}
+
+sub generate {
+    my ($self, $unique, $path) = @_;
+    return $self->hash->add($unique, $path)->generate;
+}
+
+sub hash {
+    return Crypt::SaltedHash->new;
+}
+
 
 sub hook_before_request_validate_csrf {
     my ($self, $app) = @_;
