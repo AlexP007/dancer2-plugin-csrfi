@@ -53,8 +53,23 @@ sub hook_before_request_validate_csrf {
 
     my $success = 0;
 
+    if (not $success) {
+        $self->app->log(
+            warning => 'Dancer2::Plugin::CSRFI: Token is not valid'
+        );
+    }
+    else {
+        $self->app->log(
+            info => 'Dancer2::Plugin::CSRFI: Token is valid'
+        );
+    }
+
     my %after_validate_bag = (
         success => $success,
+    );
+
+    $self->app->log(
+        debug => 'Dancer2::Plugin::CSRFI: Entering after_validate_csrf hook'
     );
 
     $self->execute_plugin_hook(
