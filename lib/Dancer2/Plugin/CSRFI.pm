@@ -77,6 +77,8 @@ sub csrf_token {
     my ($self) = @_;
 
     my $unique;
+    my $hasher  = Crypt::SaltedHash->new;
+    my $salt    = $hasher->salt_hex;
     my $entropy = $self->page_entropy;
     my $session = $self->app->session->read($self->session_key);
 
@@ -87,10 +89,11 @@ sub csrf_token {
         $unique = $self->unique;
     }
 
-    $self->app->session->write($self->session_key => { unique => $unique });
+    $self->app->session->write(
+        $self->session_key => { unique => $unique, salt => $salt }
+    );
 
-    return $self->generate($unique, $entropy);
-
+    return $hasher->add($unique, $entropy)->generate;
 }
 
 sub validate_csrf {
@@ -102,9 +105,12 @@ sub validate_csrf {
         return;
     }
 
+    my $salt     = $session->{salt};
     my $unique   = $session->{unique};
+    my $hasher   = Crypt::SaltedHash->new(salt => $salt);
     my $entropy  = $self->referer_entropy;
-    my $expected = $self->generate($unique, $entropy);
+
+    my $expected = $hasher->add($unique, $entropy)->generate;
 
     return $token eq $expected;
 
@@ -112,7 +118,11 @@ sub validate_csrf {
 
 sub page_entropy {
     my ($self) = @_;
-    return $self->entropy($self->app->request->base . $self->app->request->path);
+
+    my $uri_base = $self->app->request->base;
+    $uri_base->path($self->app->request->path);
+
+    return $self->entropy($uri_base);
 }
 
 sub referer_entropy {
@@ -131,15 +141,6 @@ sub entropy {
 
 sub unique {
     return Data::UUID->new->create_str;
-}
-
-sub generate {
-    my ($self, $unique, $path) = @_;
-    return $self->hash->add($unique, $path)->generate;
-}
-
-sub hash {
-    return Crypt::SaltedHash->new;
 }
 
 sub hook_before_request_validate_csrf {
