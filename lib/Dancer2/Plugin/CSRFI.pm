@@ -43,13 +43,13 @@ has field_name => (
 has send_error => (
     is      => 'ro',
     lazy    => 1,
-    default => sub { $_[0]->config->{show_error} || 0 }
+    default => sub { $_[0]->config->{send_error} || 0 }
 );
 
 has error_status => (
     is      => 'ro',
     lazy    => 1,
-    default => sub { $_[0]->config->{response_status} || 403 }
+    default => sub { $_[0]->config->{error_status} || 403 }
 );
 
 has error_message => (
@@ -206,7 +206,7 @@ sub hook_before_request_validate_csrf {
         \%after_validate_bag,
     );
 
-    if (not $after_validate_bag{show_error}) {
+    if ($success or not $after_validate_bag{send_error}) {
         return;
     }
 

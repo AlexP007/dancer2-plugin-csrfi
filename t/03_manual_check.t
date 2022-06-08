@@ -18,7 +18,6 @@ package App {
 
 use Plack::Test;
 use HTTP::Request::Common;
-use Data::Dumper;
 
 my $app = Plack::Test->create(App->to_app);
 my $result;
