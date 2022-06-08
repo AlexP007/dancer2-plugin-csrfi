@@ -77,16 +77,20 @@ sub csrf_token {
     my ($self) = @_;
 
     my $unique;
-    my $hasher  = Crypt::SaltedHash->new;
-    my $salt    = $hasher->salt_hex;
+    my $salt;
+    my $hasher;
     my $entropy = $self->page_entropy;
     my $session = $self->app->session->read($self->session_key);
 
     if (defined $session and $self->once_per_session) {
         $unique = $session->{unique};
+        $salt   = $session->{salt};
+        $hasher = Crypt::SaltedHash->new(salt => $salt);
     }
     else {
         $unique = $self->unique;
+        $hasher = Crypt::SaltedHash->new;
+        $salt   = $hasher->salt_hex;
     }
 
     $self->app->session->write(
