@@ -7,12 +7,7 @@ package App {
     use Dancer2;
 
     BEGIN {
-        set plugins => {
-            CSRFI => {
-                validate_post => 1,
-                send_error    => 1,
-            }
-        };
+        set plugins => { CSRFI => { validate_post => 1 } };
     }
 
     use Dancer2::Plugin::CSRFI;
@@ -73,7 +68,6 @@ package App2 {
         set plugins => {
             CSRFI => {
                 validate_post => 1,
-                send_error    => 1,
                 field_name    => 'custo',
                 error_status  => 419,
             }

@@ -40,12 +40,6 @@ has field_name => (
     default => sub { $_[0]->config->{field_name} || 'csrf_token' }
 );
 
-has send_error => (
-    is      => 'ro',
-    lazy    => 1,
-    default => sub { $_[0]->config->{send_error} || 0 }
-);
-
 has error_status => (
     is      => 'ro',
     lazy    => 1,
@@ -188,7 +182,6 @@ sub hook_before_request_validate_csrf {
     my %after_validate_bag = (
         success       => $success,
         referer       => $referer,
-        send_error    => $self->send_error,
         error_status  => $self->error_status,
         error_message => $self->error_message,
     );
@@ -206,7 +199,7 @@ sub hook_before_request_validate_csrf {
         \%after_validate_bag,
     );
 
-    if ($success or not $after_validate_bag{send_error}) {
+    if ($success) {
         return;
     }
 
