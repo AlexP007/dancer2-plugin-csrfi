@@ -9,8 +9,9 @@ use Dancer2::Core::Hook;
 use List::Util qw(any);
 use Crypt::SaltedHash;
 use Data::UUID;
+use Log::Basic;
 
-our $VERSION = '0.01';
+our $VERSION = '1.00';
 
 plugin_keywords qw(csrf_token validate_csrf);
 
@@ -26,6 +27,12 @@ has refresh => (
     is      => 'ro',
     lazy    => 1,
     default => sub { $_[0]->config->{refresh} || 0 }
+);
+
+has template_token => (
+    is      => 'ro',
+    lazy    => 1,
+    default => sub { $_[0]->config->{template_token} }
 );
 
 has validate_post => (
@@ -60,6 +67,15 @@ sub BUILD {
             Dancer2::Core::Hook->new(
                 name => 'before',
                 code => sub { $self->hook_before_request_validate_csrf(@_) },
+            )
+        );
+    }
+
+    if (my $token = $self->template_token) {
+        $self->app->add_hook(
+            Dancer2::Core::Hook->new(
+                name => 'before_template_render',
+                code => sub { $_[0]->{$token} = $self->csrf_token }
             )
         );
     }
@@ -222,3 +238,50 @@ sub hook_before_request_validate_csrf {
 
 __END__
 # ABSTRACT: Dancer2 CSRF protection plugin.
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Dancer2::Plugin::CSRFI - Improved CSRF token generation and validation.
+
+=head1 VERSION
+
+version 1.00
+
+=head1 SYNOPSIS
+
+    use Dancer2;
+    use use Dancer2::Plugin::CSRFI;
+
+    BEGIN {
+        set plugins => {
+            CSRFI => {
+                validate_post  => 1,             # this will automate token validation.
+                template_token => 'csrf_token',  # token named 'csrf_token' will be available in templates.
+            }
+        };
+
+        get '/form' => sub {
+            template 'form';
+        };
+
+        # This route (and other post) is protected with csrf token.
+        post '/form' => sub {
+            save_data(body_parameters);
+        };
+    }
+
+=head1 AUTHOR
+
+Alexander Panteleev <alexpan at cpan dot org>.
+
+=head1 LICENSE AND COPYRIGHT
+
+This software is copyright (c) 2022 by Alexander Panteleev.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut

@@ -93,9 +93,9 @@ $token  = $result->content;
 
 $result = $app->request(
     POST '/form',
-        [custo => $token, field => 'y'],
-        Cookie => $cookie,
-        Referer => 'http://localhost/token'
+    [custo => $token, field => 'y'],
+    Cookie => $cookie,
+    Referer => 'http://localhost/token'
 );
 
 is($result->content, 'y', 'Test3: valid token with valid session and referer');
@@ -106,8 +106,8 @@ $token  = $result->content;
 
 $result = $app->request(
     POST '/form',
-        [custo => $token, field => 'y'],
-        Referer => 'http://localhost/token'
+    [custo => $token, field => 'y'],
+    Referer => 'http://localhost/token'
 );
 
 is($result->code, 419, 'Test4: valid token without valid session and referer');
@@ -148,4 +148,4 @@ $result = $app->request(
         Referer => 'http://localhost/token'
 );
 
-is($result->code, 503, 'Test4: valid token without valid session and referer');
+is($result->code, 503, 'Test5: valid token without valid session and referer');
