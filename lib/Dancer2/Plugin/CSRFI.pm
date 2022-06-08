@@ -22,10 +22,10 @@ has session_key => (
     default => sub { $_[0]->config->{session_key} || '_csrf' }
 );
 
-has once_per_session => (
+has refresh => (
     is      => 'ro',
     lazy    => 1,
-    default => sub { $_[0]->config->{once_per_session} || 1 }
+    default => sub { $_[0]->config->{refresh} || 0 }
 );
 
 has validate_post => (
@@ -82,7 +82,7 @@ sub csrf_token {
     my $entropy = $self->page_entropy;
     my $session = $self->app->session->read($self->session_key);
 
-    if (defined $session and $self->once_per_session) {
+    if (defined $session and not $self->refresh) {
         $unique = $session->{unique};
         $salt   = $session->{salt};
         $hasher = Crypt::SaltedHash->new(salt => $salt);
@@ -103,6 +103,10 @@ sub csrf_token {
 sub validate_csrf {
     my ($self, $token) = @_;
 
+    if (not defined $token) {
+        return;
+    }
+
     my $session = $self->app->session->read($self->session_key);
 
     if (not defined $session) {
@@ -117,7 +121,6 @@ sub validate_csrf {
     my $expected = $hasher->add($unique, $entropy)->generate;
 
     return $token eq $expected;
-
 }
 
 sub page_entropy {
@@ -131,7 +134,7 @@ sub page_entropy {
 
 sub referer_entropy {
     my ($self) = @_;
-    return $self->entropy($self->app->request->referer);
+    return $self->entropy($self->app->request->referer || '');
 }
 
 sub entropy {
