@@ -302,6 +302,20 @@ Has useful hooks (so far one).
 If you are unfamiliar with this topic or want to learn more, read this
 L<Cross-Site Request Forgery Prevention Cheat Sheet|https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html>.
 
+=head1 DSL KEYWORDS
+
+=head3 csrf_token
+
+    csrf_token(): Str
+
+Generate CSRF token.
+
+=head3 validate_csrf
+
+    validate_csrf(Str $token): Bool
+
+Validate CSRF token.
+
 =head1 AUTHOR
 
 Alexander Panteleev <alexpan at cpan dot org>.
