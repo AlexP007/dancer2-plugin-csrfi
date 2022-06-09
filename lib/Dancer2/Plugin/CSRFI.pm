@@ -256,23 +256,51 @@ version 1.00
     use Dancer2;
     use use Dancer2::Plugin::CSRFI;
 
-    BEGIN {
-        set plugins => {
-            CSRFI => {
-                validate_post  => 1,             # this will automate token validation.
-                template_token => 'csrf_token',  # token named 'csrf_token' will be available in templates.
-            }
-        };
-
-        get '/form' => sub {
-            template 'form';
-        };
-
-        # This route (and other post) is protected with csrf token.
-        post '/form' => sub {
-            save_data(body_parameters);
-        };
+    set plugins => {
+        CSRFI => {
+            validate_post  => 1,             # this will automate token validation.
+            template_token => 'csrf_token',  # token named 'csrf_token' will be available in templates.
+        }
     }
+
+    get '/form' => sub {
+        template 'form';
+    };
+
+    # This route (and other post) is protected with csrf token.
+    post '/form' => sub {
+        save_data(body_parameters);
+    };
+
+=head1 DESCRIPTION
+
+This module is inspired by L<Dancer2::Plugin::CSRF|https://metacpan.org/pod/Dancer2::Plugin::CSRF>
+and L<Plack::Middleware::CSRFBlock|https://metacpan.org/pod/Plack::Middleware::CSRFBlock>.
+
+But it's fresh (2022 year release) and will be supported.
+
+=head2 Capabilities
+
+=over 4
+
+=item *
+Сan be used in multi-application mode.
+
+=item *
+Сan issue and verify CSRF token.
+
+=item *
+Can automatically check the token for post requests.
+
+=item*
+Has useful hooks (so far one).
+
+=back
+
+=head2 WHY USE CSRF TOKEN
+
+If you are unfamiliar with this topic or want to learn more, read this
+L<Cross-Site Request Forgery Prevention Cheat Sheet|https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html>.
 
 =head1 AUTHOR
 
