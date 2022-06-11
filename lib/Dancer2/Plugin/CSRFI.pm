@@ -316,6 +316,50 @@ Generate CSRF token.
 
 Validate CSRF token.
 
+=head1 CONFIGURATION
+    ...
+    plugins:
+        CSRFI:
+            session_key: _csrf          # this is default
+            refresh: 0                  # this is default
+            template_token: csrf_token
+            validate_post: 0            # this is default
+            field_name: csrf_token      # this is default
+            error_status: 403           # this is default
+            error_message: Forbidden    # this is default
+    ...
+
+=head3 session_key
+
+Session storage key where this module stores data.
+
+=head3 refresh
+
+If true, token will be refreshed on each hit.
+This makes your applications more secure, but in many cases, is too strict.
+
+=head3 template_token
+
+If provided, template token with csrf token will be set.
+
+=head3 validate_post
+
+If true, token will be automatically validates each post request with
+content-types application/x-www-form-urlencoded or multipart/form-data.
+
+=head3 field_name
+
+Filed name in body-parameters sent with post request, where this module will try
+to find csrf token, when validate_post is enable.
+
+=head3 error_status
+
+Error with this status will be send if validate_post is enable.
+
+=head3 error_message
+
+Error with this message will be send if validate_post is enable.
+
 =head1 AUTHOR
 
 Alexander Panteleev <alexpan at cpan dot org>.
