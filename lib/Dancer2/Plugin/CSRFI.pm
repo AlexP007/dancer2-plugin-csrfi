@@ -9,7 +9,6 @@ use Dancer2::Core::Hook;
 use List::Util qw(any);
 use Crypt::SaltedHash;
 use Data::UUID;
-use Log::Basic;
 
 our $VERSION = '1.00';
 
