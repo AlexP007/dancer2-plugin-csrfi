@@ -291,7 +291,7 @@ But it's fresh (2022 year release) and will be supported.
 =item *
 Can automatically check the token for post requests.
 
-=item*
+=item *
 Has useful hooks (so far one).
 
 =back
