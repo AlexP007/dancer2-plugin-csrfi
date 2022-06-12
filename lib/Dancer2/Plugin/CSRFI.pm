@@ -10,7 +10,7 @@ use List::Util qw(any);
 use Crypt::SaltedHash;
 use Data::UUID;
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 plugin_keywords qw(csrf_token validate_csrf);
 
@@ -248,7 +248,7 @@ Dancer2::Plugin::CSRFI - Improved CSRF token generation and validation.
 
 =head1 VERSION
 
-version 1.00
+version 1.01
 
 =head1 SYNOPSIS
 
