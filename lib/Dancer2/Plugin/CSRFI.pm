@@ -316,6 +316,7 @@ Generate CSRF token.
 Validate CSRF token.
 
 =head1 CONFIGURATION
+
     ...
     plugins:
         CSRFI:
