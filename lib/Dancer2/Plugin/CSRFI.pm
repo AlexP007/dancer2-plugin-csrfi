@@ -350,15 +350,38 @@ content-types application/x-www-form-urlencoded or multipart/form-data.
 =head3 field_name
 
 Filed name in body-parameters sent with post request, where this module will try
-to find csrf token, when validate_post is enable.
+to find csrf token, when validate_post is enabled.
 
 =head3 error_status
 
-Error with this status will be send if validate_post is enable.
+Error with this status will be send if validate_post is enabled.
 
 =head3 error_message
 
-Error with this message will be send if validate_post is enable.
+Error with this message will be send if validate_post is enabled.
+
+=head1 HOOKS
+
+=head3 after_validate_csrf
+
+Fires if validate_post is enabled. After validating the token but before sending the error.
+
+    # Two arguments: Dancer2 app + module args.
+    hook after_validate_csrf => sub {
+        my ($app, $args) = @_;
+        log $args;
+        redirect '/error';
+    };
+
+    # Args structure.
+    $args = {
+        success       => $success,
+        referer       => $referer,
+        error_status  => $error_status,
+        error_message => $error_message,
+    };
+
+You could change $args values by ref, then module will continue to operate with the changed values.
 
 =head1 AUTHOR
 
