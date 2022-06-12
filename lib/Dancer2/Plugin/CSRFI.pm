@@ -383,6 +383,23 @@ Fires if validate_post is enabled. After validating the token but before sending
 
 You could change $args values by ref, then module will continue to operate with the changed values.
 
+=head1 OTHER USEFUL PLUGINS
+
+=over 4
+
+=item *
+L<Dancer2::Plugin::FormValidator|https://metacpan.org/pod/Dancer2::Plugin::FormValidator>
+
+=back
+
+=head1 BUGS AND LIMITATIONS
+
+If you find one, please let me know.
+
+=head1 SOURCE CODE REPOSITORY
+
+L<https://github.com/AlexP007/dancer2-plugin-csrfi|https://github.com/AlexP007/dancer2-plugin-csrfi>.
+
 =head1 AUTHOR
 
 Alexander Panteleev <alexpan at cpan dot org>.
