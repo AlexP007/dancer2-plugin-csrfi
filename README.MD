@@ -1,6 +1,6 @@
 ## DESCRIPTION
 
-This module was created to provide CSRFI protection for Dancer2 applications.
+This module was created to provide CSRF protection for Dancer2 applications.
 
 [metacpan link](https://metacpan.org/pod/Dancer2::Plugin::CSRFI).
 
