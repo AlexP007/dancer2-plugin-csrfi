@@ -9,8 +9,9 @@ use Dancer2::Core::Hook;
 use List::Util qw(any);
 use Crypt::SaltedHash;
 use Data::UUID;
+use URI::Split qw(uri_split uri_join);
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 plugin_keywords qw(csrf_token validate_csrf);
 
@@ -146,7 +147,15 @@ sub page_entropy {
 
 sub referer_entropy {
     my ($self) = @_;
-    return $self->entropy($self->app->request->referer || '');
+
+    my $referer = $self->app->request->referer || '';
+
+    # To remove everything after ?.
+    my ($scheme, $auth, $path) = uri_split($referer);
+
+    return $self->entropy(
+        uri_join($scheme, $auth, $path),
+    );
 }
 
 sub entropy {
@@ -251,7 +260,7 @@ Dancer2::Plugin::CSRFI - Improved CSRF token generation and validation.
 
 =head1 VERSION
 
-version 1.01
+version 1.02
 
 =head1 SYNOPSIS
 
