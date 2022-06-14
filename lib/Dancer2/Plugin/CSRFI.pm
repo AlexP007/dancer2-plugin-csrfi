@@ -135,10 +135,13 @@ sub validate_csrf {
 sub page_entropy {
     my ($self) = @_;
 
-    my $uri_base = $self->app->request->base;
-    $uri_base->path($self->app->request->path);
+    my $base = $self->app->request->uri_base;
+    my $path = $self->app->request->path;
 
-    return $self->entropy($uri_base);
+    # To prevent //.
+    $path = $path eq '/' ? '' : $path;
+
+    return $self->entropy($base . $path);
 }
 
 sub referer_entropy {
@@ -253,7 +256,7 @@ version 1.01
 =head1 SYNOPSIS
 
     use Dancer2;
-    use use Dancer2::Plugin::CSRFI;
+    use Dancer2::Plugin::CSRFI;
 
     set plugins => {
         CSRFI => {
