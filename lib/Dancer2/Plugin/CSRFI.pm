@@ -11,7 +11,7 @@ use Crypt::SaltedHash;
 use Data::UUID;
 use URI::Split qw(uri_split uri_join);
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 plugin_keywords qw(csrf_token validate_csrf);
 
@@ -213,13 +213,6 @@ sub hook_before_request_validate_csrf {
         error_message => $self->error_message,
     );
 
-    $self->app->log(
-        debug => {
-            message => __PACKAGE__ . ': Entering after_validate_csrf hook',
-            referer => $referer,
-        }
-    );
-
     $self->execute_plugin_hook(
         'after_validate_csrf',
         $app,
@@ -260,7 +253,7 @@ Dancer2::Plugin::CSRFI - Improved CSRF token generation and validation.
 
 =head1 VERSION
 
-version 1.02
+version 1.03
 
 =head1 SYNOPSIS
 
@@ -272,7 +265,7 @@ version 1.02
             validate_post  => 1,             # this will automate token validation.
             template_token => 'csrf_token',  # token named 'csrf_token' will be available in templates.
         }
-    }
+    };
 
     get '/form' => sub {
         template 'form';
